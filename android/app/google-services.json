@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "356811794340",
+    "project_id": "first-todo-app-9550d",
+    "storage_bucket": "first-todo-app-9550d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:356811794340:android:769c621c7cea223678c331",
+        "android_client_info": {
+          "package_name": "com.killerdevil127.first_todo_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDygof1lZSe1XitYoj4xEHQewCFoyoeKcM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

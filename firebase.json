@@ -1,0 +1,31 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "first-todo-app-9550d",
+          "appId": "1:356811794340:android:769c621c7cea223678c331",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "first-todo-app-9550d",
+          "configurations": {
+            "android": "1:356811794340:android:769c621c7cea223678c331",
+            "ios": "1:356811794340:ios:7b7c4d91183d869b78c331",
+            "web": "1:356811794340:web:c3f531e6afcff1dc78c331"
+          }
+        }
+      }
+    }
+  },
+  "hosting": {
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  }
+}
