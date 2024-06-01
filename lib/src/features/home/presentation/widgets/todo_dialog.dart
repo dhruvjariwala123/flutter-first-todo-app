@@ -32,6 +32,7 @@ class TodoDialog extends StatelessWidget {
                 controller: taskController,
                 isSecure: false,
                 text: hintText,
+                maxWidth: null,
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10),

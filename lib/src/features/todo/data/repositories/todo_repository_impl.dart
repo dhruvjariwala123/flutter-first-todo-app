@@ -8,6 +8,7 @@ import 'package:first_todo_app/src/features/todo/data/models/todo_model.dart';
 
 import 'package:first_todo_app/src/features/todo/domain/entities/todo_entity.dart';
 
+import '../../../../core/exceptions/app_exceptions.dart';
 import '../../domain/repositories/todo_repository.dart';
 
 class TodoRepositoryImlp implements TodoRepository {
@@ -19,7 +20,7 @@ class TodoRepositoryImlp implements TodoRepository {
       required this.todoLocal,
       required this.networkService});
   @override
-  Future<Either<Exception, Todo>> addTodo(
+  Future<Either<AppException, Todo>> addTodo(
       {required String task, required Priority priority}) async {
     String? uid = null;
     bool isRemoteSuccess = false;
@@ -41,7 +42,7 @@ class TodoRepositoryImlp implements TodoRepository {
   }
 
   @override
-  Future<Either<Exception, Todo>> changeTodoCompleteStatus(
+  Future<Either<AppException, Todo>> changeTodoCompleteStatus(
       {required Todo todo}) async {
     bool isRemoteSuccess = false;
     if (await networkService.hasInternetConnection()) {
@@ -58,7 +59,7 @@ class TodoRepositoryImlp implements TodoRepository {
   }
 
   @override
-  Future<Either<Exception, void>> deleteTodo({required Todo todo}) async {
+  Future<Either<AppException, void>> deleteTodo({required Todo todo}) async {
     bool isRemoteSuccess = false;
     if (await networkService.hasInternetConnection()) {
       final result =
@@ -75,7 +76,7 @@ class TodoRepositoryImlp implements TodoRepository {
   }
 
   @override
-  Future<Either<Exception, List<Todo>>> getTodos() async {
+  Future<Either<AppException, List<Todo>>> getTodos() async {
     if (await networkService.hasInternetConnection()) {
       return todoRemote.getTodos();
     }
@@ -83,7 +84,7 @@ class TodoRepositoryImlp implements TodoRepository {
   }
 
   @override
-  Future<Either<Exception, Todo>> updateTodo(
+  Future<Either<AppException, Todo>> updateTodo(
       {required Todo oldTodo, required Todo newTodo}) async {
     bool isRemoteSuccess = false;
 

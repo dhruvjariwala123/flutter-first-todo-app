@@ -10,7 +10,6 @@ import '../../../../core/constants/priority_enum.dart';
 import '../../../sync/domain/usecases/is_sync_needed_usecase.dart';
 import '../../../todo/domain/entities/todo_category.dart';
 import '../../../todo/domain/entities/todo_entity.dart';
-import '../../../todo/domain/repositories/todo_repository.dart';
 import '../../../todo/domain/usecases/get_todos_usecase.dart';
 
 part 'home_event.dart';
@@ -51,14 +50,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     });
     on<GetTodosEvent>(
       (event, emit) async {
-        print("in get Todos");
         emit(WaitingForTodosDataFetchingState());
         final result = await getTodosUsecase.execute();
         result.fold((Left) {
-          print("fetching fail");
           TodosLoaddedFailureState(error: left.toString());
         }, (right) {
-          print("fetching success : ${right.toString()}");
           emit(TodosLoaddedSuccessfulState(todos: right));
         });
       },
@@ -93,9 +89,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         });
       },
     );
-    on<TodoCategoryChangeEvent>(
+    on<FilterTodosEvent>(
       (event, emit) async {
-        final List<Todo> data;
+        List<Todo> data;
         final result = await getTodosUsecase.execute();
         List<Todo> todos = [];
         result.fold(
@@ -103,6 +99,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             (right) {
           todos = right;
         });
+
         if (event.todoCategory == TodoCategory.Completed) {
           data = todos.where((element) => element.isCompleted == true).toList();
         } else if (event.todoCategory == TodoCategory.UnCompleted) {
@@ -113,6 +110,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         } else {
           data = [];
         }
+        if (event.todoPriority != "All") {
+          data = data
+              .where((element) => element.priority.name == event.todoPriority)
+              .toList();
+        }
         emit(TodosLoaddedSuccessfulState(todos: data));
       },
     );
@@ -121,10 +123,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       final result = await isSyncNeededUseCase.execute();
       result.fold((Left) => emit(SyncNotNeededState()), (isNeeded) {
         if (isNeeded) {
-          print("isNeeded : true");
           emit(SyncNeededState());
         } else {
-          print("isNeeded : false");
+          ("isNeeded : false");
           emit(SyncNotNeededState());
           add(GetTodosEvent());
         }

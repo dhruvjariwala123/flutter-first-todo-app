@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'core/theme/bloc/theme_bloc.dart';
 import 'features/home/presentation/bloc/home_bloc.dart';
 import 'features/home/presentation/pages/home_screen.dart';
 
@@ -29,27 +30,38 @@ class MyApp extends StatelessWidget {
         BlocProvider<SyncTodoBloc>(
           create: (context) => sl<SyncTodoBloc>(),
         ),
+        BlocProvider<ThemeBloc>(
+          create: (context) => sl<ThemeBloc>(),
+        )
       ],
-      child: MaterialApp(
-        routes: {
-          "/": (context) {
-            final user = FirebaseAuth.instance.currentUser;
-            if (user != null) {
-              return HomeScreen();
-            } else {
-              return LoginScreen();
-            }
-          },
-          "/registeration": (context) => RegistrationScreen(),
-          "/login": (context) => LoginScreen(),
-          "/sync": (context) => SyncScreen(),
+      child: BlocBuilder<ThemeBloc, ThemeState>(
+        builder: (context, state) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            routes: {
+              "/": (context) {
+                final user = FirebaseAuth.instance.currentUser;
+                if (user != null) {
+                  return HomeScreen();
+                } else {
+                  return LoginScreen();
+                }
+              },
+              "/registeration": (context) => RegistrationScreen(),
+              "/login": (context) => LoginScreen(),
+              "/sync": (context) => SyncScreen(),
+            },
+            initialRoute: "/",
+            title: 'Flutter Todo App',
+            theme: ThemeData(
+              colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+              useMaterial3: true,
+            ),
+            darkTheme: ThemeData.dark(useMaterial3: true),
+            themeMode:
+                state is LightThemeState ? ThemeMode.light : ThemeMode.dark,
+          );
         },
-        initialRoute: "/",
-        title: 'Flutter Todo App',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          useMaterial3: true,
-        ),
       ),
     );
   }

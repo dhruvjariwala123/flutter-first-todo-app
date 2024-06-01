@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:first_todo_app/src/core/exceptions/app_exceptions.dart';
 import 'package:first_todo_app/src/features/todo/data/models/todo_model.dart';
 import 'package:uuid/uuid.dart';
 
@@ -12,18 +13,18 @@ class TodoRemoteDataSource {
   final FirebaseAuth firebaseAuth;
   TodoRemoteDataSource(
       {required this.firebaseFirestore, required this.firebaseAuth});
-  Future<Either<Exception, TodoModel>> addTodo(
+  Future<Either<AppException, TodoModel>> addTodo(
       {required String task, required Priority priority}) async {
     try {
       // first fetch user data
       final user = firebaseAuth.currentUser;
       if (user == null) {
-        return Left(Exception("user is not logged in"));
+        return Left(UnauthorizedUserException("user is not logged in"));
       }
       final userData = await getUserDataByUid(uid: user.uid);
       // if user is present so, add the to todos sub collection.
       if (userData.docs.isEmpty) {
-        return Left(Exception("user not found"));
+        return Left(UserNotFoundException("user not found"));
       }
       var uuid = Uuid();
       final todo = TodoModel(
@@ -39,22 +40,22 @@ class TodoRemoteDataSource {
 
       return Right(TodoModel.fromJson(todo));
     } on Exception catch (e) {
-      return Left(e);
+      return Left(CloudDBException(e.toString()));
     }
   }
 
-  Future<Either<Exception, TodoModel>> changeTodoCompleteStatus(
+  Future<Either<AppException, TodoModel>> changeTodoCompleteStatus(
       {required TodoModel todo}) async {
     try {
       // first fetch user data
       final user = firebaseAuth.currentUser;
       if (user == null) {
-        return Left(Exception("user is not logged in"));
+        return Left(UnauthorizedUserException("user is not logged in"));
       }
       final userData = await getUserDataByUid(uid: user.uid);
       // if user is present so, add the to todos sub collection.
       if (userData.docs.isEmpty) {
-        return Left(Exception("user not found"));
+        return Left(UserNotFoundException("user not found"));
       }
       final todoResult = await firebaseFirestore
           .collection("users/${userData.docs.first.id}/todos")
@@ -62,7 +63,7 @@ class TodoRemoteDataSource {
           .get();
 
       if (todoResult.docs.isEmpty) {
-        return Left(Exception("todo is not present"));
+        return Left(TodoNotFoundException("todo is not present"));
       }
       final todoId = todoResult.docs.first.id;
       firebaseFirestore
@@ -71,21 +72,21 @@ class TodoRemoteDataSource {
           .set(todo.toJson());
       return Right(todo);
     } on Exception catch (e) {
-      return Left(e);
+      return Left(CloudDBException(e.toString()));
     }
   }
 
-  Future<Either<Exception, List<TodoModel>>> getTodos() async {
+  Future<Either<AppException, List<TodoModel>>> getTodos() async {
     try {
       // first fetch user data
       final user = firebaseAuth.currentUser;
       if (user == null) {
-        return Left(Exception("user is not logged in"));
+        return Left(UnauthorizedUserException("user is not logged in"));
       }
       final userData = await getUserDataByUid(uid: user.uid);
       // if user is present so, add the to todos sub collection.
       if (userData.docs.isEmpty) {
-        return Left(Exception("user not found"));
+        return Left(UserNotFoundException("user not found"));
       }
       final todoResult = await firebaseFirestore
           .collection("users/${userData.docs.first.id}/todos")
@@ -95,22 +96,22 @@ class TodoRemoteDataSource {
 
       return Right(data);
     } on Exception catch (e) {
-      return Left(e);
+      return Left(CloudDBException(e.toString()));
     }
   }
 
-  Future<Either<Exception, Todo>> updateTodo(
+  Future<Either<AppException, Todo>> updateTodo(
       {required TodoModel oldTodo, required TodoModel newTodo}) async {
     try {
       // first fetch user data
       final user = firebaseAuth.currentUser;
       if (user == null) {
-        return Left(Exception("user is not logged in"));
+        return Left(UnauthorizedUserException("user is not logged in"));
       }
       final userData = await getUserDataByUid(uid: user.uid);
       // if user is present so, add the to todos sub collection.
       if (userData.docs.isEmpty) {
-        return Left(Exception("user not found"));
+        return Left(UserNotFoundException("user not found"));
       }
       final todoResult = await firebaseFirestore
           .collection("users/${userData.docs.first.id}/todos")
@@ -118,7 +119,7 @@ class TodoRemoteDataSource {
           .get();
 
       if (todoResult.docs.isEmpty) {
-        return Left(Exception("todo is not present"));
+        return Left(TodoNotFoundException("todo is not present"));
       }
       final todoId = todoResult.docs.first.id;
       firebaseFirestore
@@ -127,7 +128,7 @@ class TodoRemoteDataSource {
           .set(newTodo.toJson());
       return Right(newTodo);
     } on Exception catch (e) {
-      return Left(e);
+      return Left(CloudDBException(e.toString()));
     }
   }
 
@@ -139,17 +140,18 @@ class TodoRemoteDataSource {
         .get();
   }
 
-  Future<Either<Exception, void>> deleteTodo({required TodoModel todo}) async {
+  Future<Either<AppException, void>> deleteTodo(
+      {required TodoModel todo}) async {
     try {
       print("in deleteTodo");
       final user = firebaseAuth.currentUser;
       if (user == null) {
-        return Left(Exception("user is not logged in"));
+        return Left(UnauthorizedUserException("user is not logged in"));
       }
       final userData = await getUserDataByUid(uid: user.uid);
       // if user is present so, add the to todos sub collection.
       if (userData.docs.isEmpty) {
-        return Left(Exception("user not found"));
+        return Left(UserNotFoundException("user not found"));
       }
       print("${todo.id}");
       final todoResult = await firebaseFirestore
@@ -164,22 +166,22 @@ class TodoRemoteDataSource {
       }
       return Right(null);
     } on Exception catch (e) {
-      return Left(e);
+      return Left(CloudDBException(e.toString()));
     }
   }
 
-  Future<Either<Exception, void>> setTodos(
+  Future<Either<AppException, void>> setTodos(
       {required List<TodoModel> todos}) async {
     try {
       // first fetch user data
       final user = firebaseAuth.currentUser;
       if (user == null) {
-        return Left(Exception("user is not logged in"));
+        return Left(UnauthorizedUserException("user is not logged in"));
       }
       final userData = await getUserDataByUid(uid: user.uid);
       // if user is present so, add the to todos sub collection.
       if (userData.docs.isEmpty) {
-        return Left(Exception("user not found"));
+        return Left(UserNotFoundException("user not found"));
       }
       final snapshot = await firebaseFirestore
           .collection("users/${userData.docs.first.id}/todos")
@@ -198,10 +200,10 @@ class TodoRemoteDataSource {
         await batch.commit();
         return Right(null);
       } on Exception catch (e) {
-        return Left(e);
+        return Left(CloudDBException(e.toString()));
       }
     } on Exception catch (e) {
-      return Left(e);
+      return Left(CloudDBException(e.toString()));
     }
   }
 }

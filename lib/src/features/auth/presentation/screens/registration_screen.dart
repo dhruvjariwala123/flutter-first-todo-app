@@ -15,6 +15,8 @@ class RegistrationScreen extends StatelessWidget {
     final emailController = TextEditingController();
     final passwordController = TextEditingController();
     final confirmPasswordController = TextEditingController();
+    bool isDesktop = MediaQuery.of(context).size.width > 600 ? true : false;
+    double? TextFieldMaxSize = isDesktop ? 550 : null;
     return Scaffold(
       appBar: AppBar(
         title: Text("Registration"),
@@ -50,79 +52,85 @@ class RegistrationScreen extends StatelessWidget {
             if (state is LoadingState) {
               buttonChild = Center(
                 child: Padding(
-                  padding: const EdgeInsets.all(10.0),
+                  padding: const EdgeInsets.all(5.0),
                   child: CircularProgressIndicator(),
                 ),
               );
             } else {
-              buttonChild = Text("Register");
+              buttonChild = Center(child: Text("Register"));
             }
 
             return Padding(
               padding: EdgeInsets.all(20),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  MyTextFormField(
-                    text: "Enter User Name",
-                    isSecure: false,
-                    controller: userNameController,
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  MyTextFormField(
-                    text: "Enter Email",
-                    isSecure: false,
-                    controller: emailController,
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  MyTextFormField(
-                    text: "Enter Password",
-                    isSecure: true,
-                    controller: passwordController,
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  MyTextFormField(
-                    text: "Enter Confirm Password",
-                    isSecure: true,
-                    controller: confirmPasswordController,
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  ElevatedButton(
-                      onPressed: () {
-                        final String name = userNameController.text;
-                        final String password = passwordController.text;
-                        final String email = emailController.text;
-                        final String confirmPassword =
-                            confirmPasswordController.text;
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    MyTextFormField(
+                      text: "Enter User Name",
+                      isSecure: false,
+                      controller: userNameController,
+                      maxWidth: TextFieldMaxSize,
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    MyTextFormField(
+                      text: "Enter Email",
+                      isSecure: false,
+                      controller: emailController,
+                      maxWidth: TextFieldMaxSize,
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    MyTextFormField(
+                      text: "Enter Password",
+                      isSecure: true,
+                      controller: passwordController,
+                      maxWidth: TextFieldMaxSize,
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    MyTextFormField(
+                      text: "Enter Confirm Password",
+                      isSecure: true,
+                      controller: confirmPasswordController,
+                      maxWidth: TextFieldMaxSize,
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    ElevatedButton(
+                        onPressed: () {
+                          final String name = userNameController.text;
+                          final String password = passwordController.text;
+                          final String email = emailController.text;
+                          final String confirmPassword =
+                              confirmPasswordController.text;
 
-                        BlocProvider.of<AuthBloc>(context).add(
-                          RegisterationEvent(
-                            name: name,
-                            email: email,
-                            password: password,
-                            confirmPassword: confirmPassword,
-                          ),
-                        );
-                      },
-                      child: buttonChild),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  TextButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, "/login");
-                      },
-                      child: Text("or have alreday registerd , Login?"))
-                ],
+                          BlocProvider.of<AuthBloc>(context).add(
+                            RegisterationEvent(
+                              name: name,
+                              email: email,
+                              password: password,
+                              confirmPassword: confirmPassword,
+                            ),
+                          );
+                        },
+                        child: SizedBox(width: 100, child: buttonChild)),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    TextButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, "/login");
+                        },
+                        child: Text("or have alreday registerd , Login?"))
+                  ],
+                ),
               ),
             );
           },

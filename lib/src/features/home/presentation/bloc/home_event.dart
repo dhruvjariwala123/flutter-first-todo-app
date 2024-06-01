@@ -49,9 +49,10 @@ class DeleteTodoEvent extends HomeEvent {
   List<Object> get props => [todo];
 }
 
-class TodoCategoryChangeEvent extends HomeEvent {
+class FilterTodosEvent extends HomeEvent {
   final TodoCategory todoCategory;
-  TodoCategoryChangeEvent({required this.todoCategory});
+  final String todoPriority;
+  FilterTodosEvent({required this.todoCategory, required this.todoPriority});
   @override
   List<Object> get props => [todoCategory];
 }

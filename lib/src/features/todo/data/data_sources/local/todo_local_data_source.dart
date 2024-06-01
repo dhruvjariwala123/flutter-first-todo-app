@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../../core/constants/priority_enum.dart';
+import '../../../../../core/exceptions/app_exceptions.dart';
 import '../../models/todo_model.dart';
 
 class TodoLocalDataSource {
@@ -12,7 +13,7 @@ class TodoLocalDataSource {
 
   TodoLocalDataSource({required this.sharedPref});
 
-  Future<Either<Exception, TodoModel>> addTodo(
+  Future<Either<AppException, TodoModel>> addTodo(
       {required String task,
       required Priority priority,
       required String? uid,
@@ -34,11 +35,12 @@ class TodoLocalDataSource {
       await sharedPref.setString("todoData", jsonEncode(todoList));
       return Right(todo);
     } on Exception catch (e) {
-      return Left(e);
+      return Left(LocalDBException(e.toString()));
     }
   }
 
-  Future<Either<Exception, void>> deleteTodo({required TodoModel todo}) async {
+  Future<Either<AppException, void>> deleteTodo(
+      {required TodoModel todo}) async {
     try {
       final result = await getTodos();
       final List<TodoModel> todoList = result.fold((left) {
@@ -55,13 +57,13 @@ class TodoLocalDataSource {
       if (isSaved) {
         return Right(null);
       }
-      return Left(Exception("can't save data in device local storage"));
+      return Left(LocalDBException("can't save data in device local storage"));
     } on Exception catch (e) {
-      return Left(e);
+      return Left(LocalDBException(e.toString()));
     }
   }
 
-  Future<Either<Exception, TodoModel>> updateTodo(
+  Future<Either<AppException, TodoModel>> updateTodo(
       {required TodoModel oldTodo, required TodoModel newTodo}) async {
     try {
       final result = await getTodos();
@@ -80,13 +82,13 @@ class TodoLocalDataSource {
       if (isSaved) {
         return Right(newTodo);
       }
-      return Left(Exception("can't update the data to device storage"));
+      return Left(LocalDBException("can't update the data to device storage"));
     } on Exception catch (e) {
-      return Left(e);
+      return Left(LocalDBException(e.toString()));
     }
   }
 
-  Future<Either<Exception, TodoModel>> changeTodoCompleteStatus(
+  Future<Either<AppException, TodoModel>> changeTodoCompleteStatus(
       {required TodoModel todo}) async {
     try {
       final result = await getTodos();
@@ -106,13 +108,13 @@ class TodoLocalDataSource {
       if (isSaved) {
         return Right(todo);
       }
-      return Left(Exception("can't change the data on device storage"));
+      return Left(LocalDBException("can't change the data on device storage"));
     } on Exception catch (e) {
-      return Left(e);
+      return Left(LocalDBException(e.toString()));
     }
   }
 
-  Future<Either<Exception, List<TodoModel>>> getTodos() async {
+  Future<Either<AppException, List<TodoModel>>> getTodos() async {
     try {
       final todoData = sharedPref.getString("todoData");
       final List<TodoModel> todoList;
@@ -126,26 +128,26 @@ class TodoLocalDataSource {
       }
       return Right(todoList);
     } on Exception catch (e) {
-      return Left(e);
+      return Left(LocalDBException(e.toString()));
     }
   }
 
-  Future<Either<Exception, void>> setTodos(
+  Future<Either<AppException, void>> setTodos(
       {required List<TodoModel> todos}) async {
     try {
       sharedPref.setString("todoData", jsonEncode(todos));
       return Right(null);
     } on Exception catch (e) {
-      return Left(e);
+      return Left(LocalDBException(e.toString()));
     }
   }
 
-  Future<Either<Exception, void>> deleteTodosData() async {
+  Future<Either<AppException, void>> deleteTodosData() async {
     try {
       sharedPref.remove("todoData");
       return Right(null);
     } on Exception catch (e) {
-      return Left(e);
+      return Left(LocalDBException(e.toString()));
     }
   }
 }

@@ -29,6 +29,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../features/auth/domain/repositories/auth_repository.dart';
 import '../features/auth/presentation/bloc/auth_bloc.dart';
 import '../features/sync/domain/repositories/sync_todo_repository.dart';
+import 'theme/bloc/theme_bloc.dart';
 
 class ServiceManager {
   static final sl = GetIt.instance;
@@ -109,6 +110,7 @@ class ServiceManager {
           syncTodoDataFromCloudToLocalUsecase:
               sl<SyncTodoDataFromCloudToLocalUsecase>(),
           syncTodoDataFromLocalToCloudUsecase:
-              sl<SyncTodoDataFromLocalToCloudUsecase>()));
+              sl<SyncTodoDataFromLocalToCloudUsecase>()))
+      ..registerFactory<ThemeBloc>(() => ThemeBloc());
   }
 }

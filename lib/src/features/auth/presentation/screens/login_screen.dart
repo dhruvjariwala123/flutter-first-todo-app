@@ -14,6 +14,9 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isDesktop = MediaQuery.of(context).size.width > 600 ? true : false;
+    double? TextFieldMaxSize = isDesktop ? 550 : null;
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Login"),
@@ -21,69 +24,73 @@ class LoginScreen extends StatelessWidget {
       ),
       body: Padding(
         padding: EdgeInsets.all(20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            MyTextFormField(
-              text: "Enter Email",
-              isSecure: false,
-              controller: emailController,
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            MyTextFormField(
-              text: "Enter Password",
-              isSecure: true,
-              controller: passwordController,
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            BlocConsumer<AuthBloc, AuthState>(
-              listener: (context, state) {
-                if (state is LoginSuccessState) {
-                  BlocProvider.of<SyncTodoBloc>(context)
-                      .add(SyncTodoDataFromCloudToLocalEvent());
-                  Navigator.pushNamedAndRemoveUntil(
-                      context, "/", (route) => route.isFirst);
-                }
-                if (state is LoginFailureState) {
-                  showNormalSnackBar(
-                      context: context,
-                      content: Text('Login is Faild'),
-                      backColor: Colors.red);
-                }
-              },
-              builder: (context, state) {
-                Widget buttonChild;
-                if (state is LoadingState) {
-                  buttonChild = Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: CircularProgressIndicator(),
-                    ),
-                  );
-                } else {
-                  buttonChild = Text("Login");
-                }
-                return ElevatedButton(
-                    onPressed: () {
-                      final String email = emailController.text;
-                      final String password = passwordController.text;
-                      BlocProvider.of<AuthBloc>(context)
-                          .add(LogInEvent(email: email, password: password));
-                    },
-                    child: buttonChild);
-              },
-            ),
-            TextButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, "/registeration");
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              MyTextFormField(
+                text: "Enter Email",
+                isSecure: false,
+                controller: emailController,
+                maxWidth: TextFieldMaxSize,
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              MyTextFormField(
+                text: "Enter Password",
+                isSecure: true,
+                controller: passwordController,
+                maxWidth: TextFieldMaxSize,
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              BlocConsumer<AuthBloc, AuthState>(
+                listener: (context, state) {
+                  if (state is LoginSuccessState) {
+                    BlocProvider.of<SyncTodoBloc>(context)
+                        .add(SyncTodoDataFromCloudToLocalEvent());
+                    Navigator.pushNamedAndRemoveUntil(
+                        context, "/", (route) => route.isFirst);
+                  }
+                  if (state is LoginFailureState) {
+                    showNormalSnackBar(
+                        context: context,
+                        content: Text('Login is Faild'),
+                        backColor: Colors.red);
+                  }
                 },
-                child: Text("or Register?"))
-          ],
+                builder: (context, state) {
+                  Widget buttonChild;
+                  if (state is LoadingState) {
+                    buttonChild = Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  } else {
+                    buttonChild = Center(child: Text("Login"));
+                  }
+                  return ElevatedButton(
+                      onPressed: () {
+                        final String email = emailController.text;
+                        final String password = passwordController.text;
+                        BlocProvider.of<AuthBloc>(context)
+                            .add(LogInEvent(email: email, password: password));
+                      },
+                      child: SizedBox(width: 100, child: buttonChild));
+                },
+              ),
+              TextButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, "/registeration");
+                  },
+                  child: Text("or Register?"))
+            ],
+          ),
         ),
       ),
     );
