@@ -1,5 +1,6 @@
 import 'package:first_todo_app/src/features/home/presentation/widgets/my_chip.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
@@ -16,6 +17,8 @@ class MyTodoTile extends StatelessWidget {
       context: context,
       builder: (context) => TodoDialog(
         hintText: "Enter the new task",
+        initialValue: todo.task,
+        initialPriority: todo.priority,
         onOk: ({required Priority priority, required String task}) {
           final Todo newTodo = Todo(
               id: todo.id, task: task, isCompleted: false, priority: priority);
@@ -70,9 +73,13 @@ class MyTodoTile extends StatelessWidget {
           child: ListTile(
             title: Row(
               children: [
-                Text(
-                  todo.task,
-                  style: TextStyle(fontSize: 16),
+                Expanded(
+                  child: Text(
+                    todo.task,
+                    style: TextStyle(fontSize: 16),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
                 SizedBox(
                   width: 5,

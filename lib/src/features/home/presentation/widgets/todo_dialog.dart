@@ -10,19 +10,29 @@ class TodoDialog extends StatelessWidget {
   final String hintText;
   Function onOk;
   final TextEditingController taskController;
-  TodoDialog({super.key, required this.hintText, required this.onOk})
-      : taskController = TextEditingController();
+  String? initialValue;
+  Priority initialPriority;
+  TodoDialog({
+    super.key,
+    required this.hintText,
+    required this.onOk,
+    this.initialValue,
+    required this.initialPriority,
+  }) : taskController = TextEditingController() {
+    taskController.text = initialValue ?? "";
+  }
 
   @override
   Widget build(BuildContext context) {
     final prioritiesList = [Priority.low, Priority.medium, Priority.high];
     return BlocBuilder<HomeBloc, HomeState>(
+      buildWhen: (previous, current) => current is PrioritiesState,
       builder: (context, state) {
-        final List<bool> list;
+        List<bool> list = [false, false, false];
         if (state is PrioritiesState) {
           list = state.priorities;
         } else {
-          list = [true, false, false];
+          list[prioritiesList.indexOf(initialPriority)] = true;
         }
         return AlertDialog(
           content: Column(

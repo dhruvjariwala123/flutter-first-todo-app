@@ -32,6 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       builder: (context) => TodoDialog(
         hintText: "Enter the task",
+        initialPriority: Priority.low,
         onOk: ({required String task, required Priority priority}) {
           BlocProvider.of<HomeBloc>(context)
               .add(AddTodoEvent(priority: priority, task: task));
