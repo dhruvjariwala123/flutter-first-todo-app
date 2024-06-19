@@ -6,9 +6,11 @@ import 'package:first_todo_app/src/features/todo/domain/entities/todo_category.d
 import 'package:first_todo_app/src/features/todo/presentation/widgets/my_todo_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/constants/priority_enum.dart';
+import '../../../../core/uitls/device_info.dart';
 import '../../../../core/service_locator.dart';
 import '../../../sync/presentation/widgets/sync_dailog.dart';
 import '../../../todo/domain/entities/todo_entity.dart';
@@ -82,11 +84,20 @@ class _HomeScreenState extends State<HomeScreen> {
     return _scaffold();
   }
 
+  bool isDrawerOpen(BuildContext context) {
+    final device = getDeviceType(context);
+    if (device.name == DeviceType.desktop.name) {
+      return true;
+    }
+    return false;
+  }
+
   Scaffold _scaffold() {
     String myCategory = "All";
     String myPriority = "All";
-    bool isDrawerInBody =
-        MediaQuery.of(context).size.width > 800 ? true : false;
+
+    bool isDrawerInBody = isDrawerOpen(context);
+
     return Scaffold(
       drawer: isDrawerInBody ? null : MyDrawer(),
       appBar: AppBar(
@@ -137,7 +148,7 @@ class _HomeScreenState extends State<HomeScreen> {
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
-                isDrawerInBody ? MyDrawer() : Container(),
+                isDrawerInBody ? Positioned(child: MyDrawer()) : Container(),
                 SizedBox(
                   width: 10,
                 ),

@@ -1,3 +1,4 @@
+import 'package:first_todo_app/src/core/uitls/device_info.dart';
 import 'package:first_todo_app/src/features/home/presentation/widgets/my_chip.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -47,66 +48,132 @@ class MyTodoTile extends StatelessWidget {
         if (state is TodoDeleteSuccessfulState) {
           BlocProvider.of<HomeBloc>(context).add(GetTodosEvent());
         }
-        return Slidable(
-          endActionPane: ActionPane(
-            motion: StretchMotion(),
-            children: [
-              SlidableAction(
-                onPressed: (_) {
-                  showUpdateTodoDialog(context);
-                },
-                borderRadius: BorderRadius.circular(5),
-                backgroundColor: Colors.amber.shade500,
-                icon: Icons.settings,
-              ),
-              SlidableAction(
-                onPressed: (_) {
-                  BlocProvider.of<HomeBloc>(context)
-                      .add(DeleteTodoEvent(todo: todo));
-                },
-                borderRadius: BorderRadius.circular(5),
-                backgroundColor: Colors.red.shade600,
-                icon: Icons.delete,
-              )
-            ],
-          ),
-          child: ListTile(
-            title: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    todo.task,
-                    style: TextStyle(fontSize: 16),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                SizedBox(
-                  width: 5,
-                ),
-                MyChip(
-                  color: Colors.purple,
-                  label: todo.priority.name,
-                  onTap: () {},
-                ),
-              ],
-            ),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Checkbox(
-                    value: todo.isCompleted,
-                    onChanged: (newValue) {
-                      todo.isCompleted = newValue ?? false;
-                      BlocProvider.of<HomeBloc>(context)
-                          .add(ChangeTodoCompletedStatusEvent(todo: todo));
-                    }),
-              ],
-            ),
-          ),
-        );
+        return getDeviceType(context).name == DeviceType.mobile.name
+            ? buildMobileTodoTile(context)
+            : buildDesktopTodoTile(context);
       },
+    );
+  }
+
+  Widget buildDesktopTodoTile(BuildContext context) {
+    return ListTile(
+      title: Row(
+        children: [
+          Expanded(
+            child: Text(
+              todo.task,
+              style: TextStyle(fontSize: 16),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          SizedBox(
+            width: 5,
+          ),
+          MyChip(
+            color: Colors.purple,
+            label: todo.priority.name,
+            onTap: () {},
+          ),
+          SizedBox(
+            width: 10,
+          ),
+          // update Todo IconButton
+
+          IconButton(
+            onPressed: () {
+              showUpdateTodoDialog(context);
+            },
+            icon: Icon(Icons.settings),
+          ),
+          SizedBox(
+            width: 5,
+          ),
+          // delete Todo IconButton
+          IconButton(
+            onPressed: () {
+              BlocProvider.of<HomeBloc>(context)
+                  .add(DeleteTodoEvent(todo: todo));
+            },
+            icon: Icon(Icons.delete),
+          ),
+        ],
+      ),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Checkbox(
+              value: todo.isCompleted,
+              onChanged: (newValue) {
+                todo.isCompleted = newValue ?? false;
+                BlocProvider.of<HomeBloc>(context)
+                    .add(ChangeTodoCompletedStatusEvent(todo: todo));
+              }),
+        ],
+      ),
+    );
+  }
+
+  Widget buildMobileTodoTile(BuildContext context) {
+    return Slidable(
+      endActionPane: ActionPane(
+        motion: StretchMotion(),
+        children: [
+          SlidableAction(
+            onPressed: (_) {
+              showUpdateTodoDialog(context);
+            },
+            borderRadius: BorderRadius.circular(5),
+            backgroundColor: Colors.amber.shade500,
+            icon: Icons.settings,
+          ),
+          SlidableAction(
+            onPressed: (_) {
+              BlocProvider.of<HomeBloc>(context)
+                  .add(DeleteTodoEvent(todo: todo));
+            },
+            borderRadius: BorderRadius.circular(5),
+            backgroundColor: Colors.red.shade600,
+            icon: Icons.delete,
+          )
+        ],
+      ),
+      child: ListTile(
+        title: Row(
+          children: [
+            Expanded(
+              child: Text(
+                todo.task,
+                style: TextStyle(fontSize: 16),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            SizedBox(
+              width: 5,
+            ),
+            MyChip(
+              color: Colors.purple,
+              label: todo.priority.name,
+              onTap: () {},
+            ),
+          ],
+        ),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Checkbox(
+                value: todo.isCompleted,
+                onChanged: (newValue) {
+                  todo.isCompleted = newValue ?? false;
+                  BlocProvider.of<HomeBloc>(context)
+                      .add(ChangeTodoCompletedStatusEvent(todo: todo));
+                }),
+          ],
+        ),
+      ),
     );
   }
 }
